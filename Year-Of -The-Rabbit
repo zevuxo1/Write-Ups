@@ -1,0 +1,104 @@
+1. Ran a Nmap scan and found port 21(ftp), port 22(ssh), port 80(http) and port 8080(http) open
+    1. checked 8080 and it was useless
+    2. checked 80 and it was a website i could start with
+
+---
+
+1. checked source code and found nothing so started with a directory brute force
+    1. found a sub dir called asset after i went onto it, it
+        1. took me to a with style.css and a rick roll video
+        2. inside of style.css i found a string saying “check /sup3r_s3cr3t_fl4g.php”
+
+---
+
+1. went onto the secret page and it told me to turn off JS and directed me a YT rick roll
+
+---
+
+1. turned off JS and the page said
+    1. “Love it when people block Javascript...
+    This is happening whether you like it or not... The hint is in the video. If you're stuck here then you're just going to have to bite the bullet!
+    Make sure your audio is turned up!”
+
+---
+
+1. could not find anything of use in the video so i got trolled
+    1. saw it was redirecting me so i loaded up burp suit and found a GET line saying “hidden directory = /WExYY2Cv-q”
+
+---
+
+1. that leaded me to a page with “Hot_Babe.png”
+    1. so i downloaded it, tried getting meta data but got nothing
+    2. ran strings on it to check for human readable lines and got “Eh, you've earned this. Username for FTP is ftpuser One of these is the password:”
+    3. along with a bunch of random letters/numbers
+
+---
+
+1. saved those random lines to a .txt file and ran
+
+```bash
+hydra -l ftpuser -P pass.txt ftp://10.10.78.15
+
+```
+
+---
+
+1. cracked the password “5iez1wGXKfPKQ” along with user
+
+---
+
+1. connected to FTP server with those details and found a file called eli’s_cred.txt
+    1. opened that and got a bunch of random shit 
+    
+    ```bash
+    +++++ ++++[ ->+++ +++++ +<]>+ +++.< +++++ [->++ +++<] >++++ +.<++ +[->-
+    --<]> ----- .<+++ [->++ +<]>+ +++.< +++++ ++[-> ----- --<]> ----- --.<+
+    ++++[ ->--- --<]> -.<++ +++++ +[->+ +++++ ++<]> +++++ .++++ +++.- --.<+
+    +++++ +++[- >---- ----- <]>-- ----- ----. ---.< +++++ +++[- >++++ ++++<
+    ]>+++ +++.< ++++[ ->+++ +<]>+ .<+++ +[->+ +++<] >++.. ++++. ----- ---.+
+    ++.<+ ++[-> ---<] >---- -.<++ ++++[ ->--- ---<] >---- --.<+ ++++[ ->---
+    --<]> -.<++ ++++[ ->+++ +++<] >.<++ +[->+ ++<]> +++++ +.<++ +++[- >++++
+    +<]>+ +++.< +++++ +[->- ----- <]>-- ----- -.<++ ++++[ ->+++ +++<] >+.<+
+    ++++[ ->--- --<]> ---.< +++++ [->-- ---<] >---. <++++ ++++[ ->+++ +++++
+    <]>++ ++++. <++++ +++[- >---- ---<] >---- -.+++ +.<++ +++++ [->++ +++++
+    <]>+. <+++[ ->--- <]>-- ---.- ----. <
+    ```
+    
+    figured out its called “brainfuck” a old esoteric language 
+    
+
+---
+
+1. decoded that and got “user: eli, password: DSpDiM1wAEwid”
+
+---
+
+1. used that to connect to ssh
+
+---
+
+1. when i logged in i found a message saying
+    
+    "Gwendoline, I am not happy with you. Check our leet s3cr3t hiding place. I've left you a hidden message there”
+    
+
+---
+
+1. used locate s3cr3t too find it and found it
+    1. found a text file with the contents 
+    
+    Your password is awful, Gwendoline.
+    It should be at least 60 characters long! Not just MniVCQVhQHUNI
+    Honestly!
+    
+    Yours sincerely
+    -Root
+    
+
+---
+
+1. logged into gwens account and got the first flag so started with priv esc
+
+---
+
+15.
