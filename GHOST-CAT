@@ -1,0 +1,45 @@
+1. ran an nmap scan and found port
+    1. 8080-http-open
+    2. 8009-ajp-open
+    3. 22-ssh-open
+
+---
+
+1. tried to do enum on the website but found nothing so moved onto 8009
+
+---
+
+1. turns out there is a exploit called ghostcat that let me read files, so i read WEB_INF/web.xml and got the creds for ssh
+
+---
+
+1. found first flag and saw tryhackme.asc and creds.gpg
+
+---
+
+1. copied the tryhackme.asc contents
+
+---
+
+1. used gpg2john to get the hash out of it by using
+    1. gpgp2john tryhackme.asc > hash.txt
+
+---
+
+1. back in the ssh shell i used 
+    1. gpg —import tryhackme.asc
+    2. gpg -d creds.gpg
+    3. and used the cracked hash i found and got merlins password
+
+---
+
+1. used sudo -l  and saw zip can be ran as sudo
+
+---
+
+1. used
+    1. TF=$(mktemp -u)
+    2. sudo zip $TF -T -TT ‘sh #’
+    3. and got root
+
+---
