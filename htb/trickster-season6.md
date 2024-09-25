@@ -45,17 +45,17 @@ make email on website too
 **git clone https://github.com/aelmokhtar/CVE-2024-34716.git**
 
 
-|-inside reverse_shell.php --> change ip to my ip | not needed pre sure
-|
-|-unzip the .zip file --> change the other reverse_shell.php to my ip
-|----Rezip the .zip file, make sure .htaccess is zipped too
-|
-|-inside exploit.py --> change ncat to nc, or install ncat
-|
-|-inside exploit.html --> change baseUrl, too "http://shop.trickster.htb"
-|--change path too "admin634ewutrx1jgitlooaj"
-|---change httpServerIP too attackers IP
-|----change port to whatever port
+|-inside reverse_shell.php --> change ip to my ip | not needed pre sure  
+|  
+|-unzip the .zip file --> change the other reverse_shell.php to my ip  
+|----Rezip the .zip file, make sure .htaccess is zipped too  
+|  
+|-inside exploit.py --> change ncat to nc, or install ncat  
+|  
+|-inside exploit.html --> change baseUrl, too "http://shop.trickster.htb"  
+|--change path too "admin634ewutrx1jgitlooaj"  
+|---change httpServerIP too attackers IP  
+|----change port to whatever port  
 
 Now Start a python server in the dir with the .zip file 
 **python3 -m http.server [port]**
