@@ -1,5 +1,7 @@
 TRICKSTER SEASON 6 WRITEUP
 
+RECON
+----  
 Started With a Port Scan 
 
 **Sudo nmap -sS -Pn -T5 -p- $ip | rustscan --ulimit 5000 -a $ip -- -sC -sV**
@@ -39,9 +41,9 @@ prestashop 8.1.5
 searching for some exploits i found it was vuln to CVE-2024-34716, which is a xss vuln in the contact form of the page
 which can be chained with an import theme function to install a reverse shell
 
-
-make email on website too
-
+FOOTHOLD
+-----
+make email on website too  
 **git clone https://github.com/aelmokhtar/CVE-2024-34716.git**
 
 
@@ -60,7 +62,10 @@ make email on website too
 Now Start a python server in the dir with the .zip file 
 **python3 -m http.server [port]**
 
-Now run the exploit and we will foothold as www-data
+Now run the exploit and we will get a foothold as www-data
+
+PRIV-ESCALATION
+--------------  
 
 
 
