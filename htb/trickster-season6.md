@@ -36,11 +36,12 @@ After it finished running i found the admin directory was changed too admin634ew
 Investing http://shop.trickster.htb/admin634ewutrx1jgitlooaj show me it was running
 prestashop 8.1.5
 
-searching for some exploits i found it was vuln to CVE-2024-34716 xss in the contact form of the page
+searching for some exploits i found it was vuln to CVE-2024-34716, which is a xss vuln in the contact form of the page
 which can be chained with an import theme function to install a reverse shell
 
 
-make email on website
+make email on website too
+
 **git clone https://github.com/aelmokhtar/CVE-2024-34716.git**
 
 
