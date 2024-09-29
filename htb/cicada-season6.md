@@ -1,7 +1,7 @@
 RECON
 --
 Started Of With Doing a Port Scan  
-**nmap $ip -p- -T5 -Pn | rustscan --ulimit 5000 $ip -- -sC -sV -Pn**  
+**nmap $ip -p- -T5 -Pn || rustscan --ulimit 5000 $ip -- -sC -sV -Pn**  
 This Returned Me 
 
     |-53/tcp   open  domain        syn-ack Simple DNS Plus
@@ -89,4 +89,34 @@ This Returned Me
     |---date: 2024-09-29T11:35:22
     |---start_date: N/A
     |-clock-skew: 6h59m59s   
+
+From the Output i could tell this was a Domain Controller inside an active directory enviroment  
+There was no website which was weird too see for once  
+
+So As Usual i prioritized SMB first so i did some digging into it  
+
+**smbclient -L \\$ip\**
+
+    Sharename       Type      Comment
+    ---------       ----      -------
+    ADMIN$          Disk      Remote Admin
+    C$              Disk      Default share
+    DEV             Disk      
+    HR              Disk      
+    IPC$            IPC       Remote IPC
+    NETLOGON        Disk      Logon server share 
+    SYSVOL          Disk      Logon server share
+Ouput Showed the usual windows shares but HR and DEV were interesting so i started digging more into them  
+
+**smbmap -H $ip -u "guest" -p " "**
+
+    ADMIN$          NO ACCESS       Remote Admin
+    C$              NO ACCESS       Default share
+    DEV             NO ACCESS
+    HR              READ ONLY
+    IPC$            READ ONLY       Remote IPC
+    NETLOGON        NO ACCESS       Logon server share 
+    SYSVOL          NO ACCESS       Logon server share 
+i had access to HR through a NULL session, after connecting to it i find one file "Notice from HR.txt"  
+Inside this i found a password "Cicada$M6Corpb*@Lp#nZp!8"
 
