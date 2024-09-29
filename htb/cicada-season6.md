@@ -95,7 +95,7 @@ There was no website which was weird too see for once
 
 So As Usual i prioritized SMB first so i did some digging into it  
 
-**smbclient -L \\$ip\**
+**smbclient -L \\$ip\\**
 
     Sharename       Type      Comment
     ---------       ----      -------
