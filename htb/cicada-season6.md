@@ -174,5 +174,11 @@ more fkn checks, smh
 but finally i got that sexy p3wned on crackmapexec for winrm  
 
 so i finally got a shell using evil-winrm  
-**evil-winrm -i $ip -u emily.carlos -p 'Q!3@Lp#M6b*7t*Vt'
+**evil-winrm -i $ip -u emily.carlos -p 'Q!3@Lp#M6b\*7t\*Vt'**
+
+EMILY --> ADMIN
+--
+i was stuck here for a bit since im not very good at windows priv esc yet, but after doing some of the basic checks i noticed i was in the "backup operators" group, and i knew from my studying this could be a powerfull positsion to be in  
+so i checked out hacktricks
+[HackTrickz Privilaged Groups](https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges#backup-operators)
 
